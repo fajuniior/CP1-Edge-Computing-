@@ -1,5 +1,7 @@
 # Projeto: Controle de Luminosidade com Arduino e LDR
 
+# 🔗 Link para o tinkercad: https://www.tinkercad.com/things/lHQuTCim7kq-cp1-edge-computing?sharecode=vifiMo60PJ3a7jOzbjVW6DRar7TVdgpZxer1KirltKo
+
 ## 📌 Descrição
 
 Este projeto utiliza um Arduino para monitorar a luminosidade de um ambiente através de um sensor LDR (fotoresistor). Dependendo da leitura do sensor, diferentes LEDs são acionados para indicar o estado do ambiente:
