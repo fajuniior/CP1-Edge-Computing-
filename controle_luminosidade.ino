@@ -1,47 +1,71 @@
-
 // PROGRAMA CONTROLE LUMINOSIDADE COM LDR
-int buzzer = 8;         // Atribui a porta 8 à variável buzzer
-int ledVermelho = 9;    // Atribui a porta 9 à variável ledVermelho
-int ledAmarelo = 10;    // Atribui a porta 10 à variável ledAmarelo
-int ledVerde = 11;      // Atribui a porta 11 à variável ledVerde
-int ldr = A0;           // Atribui A0 à variável ldr
-int valorLdr = 0;       // Leitura inicial do LDR
- 
+
+#include <LiquidCrystal.h>
+#define C4 262 // nota Dó
+
+// pinos do LCD: RS, E, D4, D5, D6, D7
+LiquidCrystal lcd(13, 12, 5, 4, 3, 2);
+
+const int pinLDR    = A0;
+const int LED_verde = 10;  // sem luz
+const int LED_amarelo = 9; // luz média
+const int LED_vermelho = 8; // muita luz
+const int buzzer     = 11;
+
 void setup() {
-  Serial.begin(9600);                 // Inicialização da comunicação serial
-  pinMode(ldr, INPUT);                // Define ldr (pino analógico A0) como entrada
-  pinMode(buzzer, OUTPUT);            // Define buzzer (pino digital 8) como saída
-  pinMode(ledVermelho, OUTPUT);       // Define ledVermelho (pino digital 9) como saída
-  pinMode(ledAmarelo, OUTPUT);        // Define ledAmarelo (pino digital 10) como saída
-  pinMode(ledVerde, OUTPUT);          // Define ledVerde (pino digital 11) como saída
+  // configurações de pino
+  pinMode(pinLDR, INPUT);
+  pinMode(LED_verde, OUTPUT);
+  pinMode(LED_amarelo, OUTPUT);
+  pinMode(LED_vermelho, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+
+  // inicializa LCD
+  lcd.begin(16, 2);
+  // splash de boas-vindas
+  lcd.setCursor(4, 0);
+  lcd.print("TALK TIE");
+  lcd.setCursor(2, 1);
+  lcd.print("Lum Monitor");
+  delay(2000);
+  lcd.clear();
 }
- 
+
 void loop() {
-  valorLdr = analogRead(ldr);         // Lê o valor do sensor LDR e armazena
- 
-  if (valorLdr < 150) {               // Luminosidade baixa (OK < 150 lux)
-    apagarLeds();                     // Executa a função apagarLeds
-    digitalWrite(ledVerde, HIGH);     // Acende o LED verde
+  int valor = analogRead(pinLDR);
+  int pct   = map(valor, 0, 1023, 0, 100);
+
+  // mostra a % no LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Lum: ");
+  lcd.print(pct);
+  lcd.print("%   "); // espaços apagam resíduos
+
+  // decide LEDs e buzzer
+  if (valor < 50) {
+    // ESCURO → verde
+    digitalWrite(LED_verde, HIGH);
+    digitalWrite(LED_amarelo, LOW);
+    digitalWrite(LED_vermelho, LOW);
+    noTone(buzzer);
   }
-  else if (valorLdr > 150 && valorLdr < 250) {  // Luminosidade média (alerta 150 a 250 lux)
-    apagarLeds();                               // Executa a função apagarLeds
-    digitalWrite(ledAmarelo, HIGH);             // Acende o LED amarelo
+  else if (valor < 600) {
+    // MÉDIO → amarelo
+    digitalWrite(LED_verde, LOW);
+    digitalWrite(LED_amarelo, HIGH);
+    digitalWrite(LED_vermelho, LOW);
+    noTone(buzzer);
   }
-  else {                              // Luminosidade alta (problema acima de 250 lux)
-    apagarLeds();                     // Executa a função apagarLeds
-    digitalWrite(ledVermelho, HIGH);  // Acende o LED vermelho
-    tone(buzzer, 1000);               // Toca o buzzer na frequência de 1000 Hz
-    delay(3000);                      // Define o tempo de duração do som do buzzer (3 segundos)
-    noTone(buzzer);                   // Desliga o som do buzzer
-    delay(2000);                      // Define o silêncio entre um toque e outro
+  else {
+    // CLARO → vermelho + buzzer 3s
+    digitalWrite(LED_verde, LOW);
+    digitalWrite(LED_amarelo, LOW);
+    digitalWrite(LED_vermelho, HIGH);
+
+    tone(buzzer, C4);     // toca a nota
+    delay(3000);          // por 3 segundos
+    noTone(buzzer);
   }
- 
-  Serial.print("Valor do LDR: ");     // Imprime uma mensagem
-  Serial.println(valorLdr);           // Imprime a variável valorLdr
-}
- 
-void apagarLeds() {                   // Função para apagar todos os LEDs
-  digitalWrite(ledVermelho, LOW);     // Desliga o LED vermelho
-  digitalWrite(ledAmarelo, LOW);      // Desliga o LED amarelo
-  digitalWrite(ledVerde, LOW);        // Desliga o LED verde
+
+  delay(500); // pausa curta antes de atualizar
 }
