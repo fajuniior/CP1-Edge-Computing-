@@ -1,7 +1,7 @@
 # Projeto: Controle de Luminosidade com Arduino e LDR
 
 ## 🔗 Link para o Tinkercad
-https://www.tinkercad.com/things/lHQuTCim7kq-cp1-edge-computing?sharecode=vifiMo60PJ3a7jOzbjVW6DRar7TVdgpZxer1KirltKo
+https://www.tinkercad.com/things/jhaIl5Rz3s7-shiny-luulia?sharecode=Xredn416oP8xJeytFs4EbDNO2roJ2R-1oLOY5byUzoE
 
 ---
 
